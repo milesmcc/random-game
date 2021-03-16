@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     computeDistribution() {
-      let results = howRandom(this.nums);
+      let results = howRandom(this.nums, 0.2);
       console.log(results);
     },
   },

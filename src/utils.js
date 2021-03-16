@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 export function decumulate(numbers, start) {
     let intervals = [];
     let last = start;
@@ -20,14 +22,67 @@ export function distances(numbers) {
     return distances;
 }
 
-// const expCDF = (lambda, x) => 1 - Math.exp(-1 * lambda * x);
-
 // Discrete only
-const uniformCDF = (a, b, x) => (x - a + 1) / (b - a);
-const sampleUniform = (a, b) => (a + Math.random() * (b - a));
+const uniformCMF = (a, b, x) => (x - a + 1) / (b - a);
+const sampleUniform = (a, b) => (a + Math.floor(Math.random() * (b - a)));
+const sampleDist = (a, b) => Math.abs(sampleUniform(a, b) - sampleUniform(a, b));
 
 
-function kolmogorovSmirnov(points, cdf) {
+const uniformPMF = (a, b, x) => {
+    if (x < 0 || x > b) {
+        return 0;
+    }
+    return (1 / (b - a + 1));
+};
+
+const diffPMF = (a, b, x) => {
+    let sum = 0;
+    for(let n = a; n <= b; n++) {
+        sum += uniformPMF(a, b, n) * uniformPMF(a, b, n - x);
+    }
+    return sum;
+}
+
+const distPMF = (a, b, x) => {
+    if (x < 0 || x > b) {
+        return 0;
+    }
+    if(x === 0) {
+        return diffPMF(a, b, 0);
+    }
+    return diffPMF(a, b, x) + diffPMF(a, b, -1 * x);
+}
+
+const distCMF = (a, b, x) => {
+    let sum = 0;
+    for(let n = a; n <= x; n++) {
+        sum += distPMF(a, b, n);
+    }
+    return sum;
+};
+
+/* Function: ksStatTheshold
+ * ------------------------
+ * Calculate the K-S statistic value that, if used as a threshold for
+ * determining fit, would only exlude true fits with probability `pVal`.
+ */
+function ksStatTheshold(pVal, n, sampleFunc, cmf) {
+    const N_TRIALS = 10000;
+
+    // Run many simulations
+    let results = [];
+    for(let i = 0; i < N_TRIALS; i++) {
+        let sample = Array.from({length: n}, sampleFunc);
+        let ksStat = kolmogorovSmirnov(sample, cmf);
+        results.push(ksStat);
+    }
+
+    // Find the K-S test value that would only exclude `pVal` of results. 
+    results.sort((a, b) => a - b);
+    return results[Math.floor((1 - pVal) * results.length)];
+}
+
+function kolmogorovSmirnov(points, cmf) {
     let supremum = 0;
     points.sort((a, b) => a - b);
     let dist = counts(points);
@@ -38,7 +93,7 @@ function kolmogorovSmirnov(points, cdf) {
     for (let x = 0; x <= max; x++) {
         totalSoFar += dist[x] || 0;
         let cumulative = totalSoFar / points.length;
-        let diff = Math.abs(cumulative - cdf(x));
+        let diff = Math.abs(cumulative - cmf(x));
         if (diff > supremum) {
             supremum = diff;
         }
@@ -83,19 +138,24 @@ export function probOfUniform(min, max, vals) {
     return x * ((1 / n) ** vals.length);
 }
 
-export function howRandom(nums) {
+export function howRandom(nums, pVal) {
+    let absThreshold = ksStatTheshold(pVal, nums.length, () => sampleUniform(0, 9), x => uniformCMF(0, 9, x));
+    let distThreshold = ksStatTheshold(pVal, nums.length, () => sampleDist(0, 9), x => distCMF(0, 9, x));
+
     let numDistances = distances(nums);
 
-    // let ksDistances = kolmogorovSmirnov(nums, x => expCDF(0, x)); // TODO: figure out distribution
-    let ksAbsolute = kolmogorovSmirnov(nums, x => uniformCDF(0, 9, x));
-
-    // let andersonDistances = andersonStatistic(nums, x => expCDF(0, x)); // TODO: figure out distribution
-    // let andersonAbsolute = andersonStatistic(nums, x => uniformCDF(0, 9, x));
+    let ksAbsolute = kolmogorovSmirnov(nums, x => uniformCMF(0, 9, x));
+    let ksDistances = kolmogorovSmirnov(numDistances, x => distCMF(0, 9, x));
 
     return {
-        // ksDistances,
+        absThreshold,
+        distThreshold,
+        numDistances,
         ksAbsolute,
-        // andersonDistances,
-        numDistances
+        ksDistances,
+        ksAbsoluteVerdict: ksAbsolute <= absThreshold,
+        ksDistanceVerdict: ksDistances <= distThreshold
     }
 }
+
+/* eslint-enable no-unused-vars */

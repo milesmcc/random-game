@@ -37,6 +37,10 @@ export default {
           this.enterNum(parseInt(val));
       } else if (val === "r") {
           this.enterNum(Math.floor(Math.random() * 10));
+      } else if (val === "m") {
+        for (let i = 0; i < 100; i++){
+          this.enterNum(Math.floor(Math.random() * 10));
+        }
       }
     }
   },
