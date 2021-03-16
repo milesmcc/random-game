@@ -1,7 +1,7 @@
 <template>
   <div class="bg-neutral-100 min-h-screen min-w-screen">
     <div class="mx-4 md:mx-auto md:max-w-screen-lg">
-      <h3 class="heading text-urge-500">Hi! DotCanvas</h3>
+      <robot-friend />
       <number-input v-model="nums" />
       <button @click="computeDistribution">Compute Distributions</button>
       <Plotly
@@ -22,6 +22,7 @@
 import NumberInput from "./components/NumberInput.vue";
 import { howRandom, distances } from "./utils.js";
 import { Plotly } from "vue-plotly";
+import RobotFriend from './components/RobotFriend.vue';
 
 export default {
   name: "App",
@@ -39,6 +40,7 @@ export default {
   components: {
     NumberInput,
     Plotly,
+    RobotFriend,
   },
   computed: {
     dotDistances() {
