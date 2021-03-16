@@ -1,3 +1,6 @@
+import "a17t"
+import "a17t/dist/tailwind.css"
+
 import Vue from 'vue'
 import App from './App.vue'
 

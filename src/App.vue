@@ -1,28 +1,49 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="bg-neutral-100 min-h-screen min-w-screen">
+    <div class="mx-4 md:mx-auto md:max-w-screen-lg">
+      <h3 class="heading text-urge-500">Hi! DotCanvas</h3>
+      <number-input v-model="nums" />
+      <button @click="computeDistribution">Compute Distributions</button>
+      <Plotly
+        :data="[
+          {
+            x: dotDistances,
+            type: 'histogram',
+            min: 0
+          },
+        ]"
+        type="histogram"
+      ></Plotly>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import NumberInput from "./components/NumberInput.vue";
+import { howRandom, distances } from "./utils.js";
+import { Plotly } from "vue-plotly";
 
 export default {
-  name: 'App',
+  name: "App",
+  data() {
+    return {
+      nums: [],
+    };
+  },
+  methods: {
+    computeDistribution() {
+      let results = howRandom(this.nums);
+      console.log(results);
+    },
+  },
   components: {
-    HelloWorld
-  }
-}
+    NumberInput,
+    Plotly,
+  },
+  computed: {
+    dotDistances() {
+      return distances(this.nums);
+    },
+  },
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
