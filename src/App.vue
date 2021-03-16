@@ -1,11 +1,16 @@
 <template>
   <div class="bg-neutral-100 min-h-screen min-w-screen">
-    <div class="mx-4 md:mx-auto md:max-w-screen-lg">
+    <div class="mx-4 pt-8 lg:pt-24 md:mx-auto md:max-w-screen-lg">
       <h1 class="heading text-6xl font-black text-center italic text-urge-600">
         No humans allowed!
       </h1>
+      <p class="text-center">
+        Miles McCain &bull; CS109 Challenge
+      </p>
       <robot-friend />
-      <number-input v-model="nums" />
+      <div class="flex justify-center">
+      <number-input v-model="nums" :maxNums="50" />
+      </div>
       <button @click="computeDistribution">Compute Distributions</button>
       <Plotly
         :data="[

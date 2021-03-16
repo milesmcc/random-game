@@ -7,7 +7,7 @@
           <ellipse
             id="shadow_2_"
             opacity="0.4"
-            fill="#2C3332"
+            fill="#808080"
             cx="300"
             cy="703.375"
             rx="88.971"
@@ -238,19 +238,6 @@
   transform-origin: center;
   height: 800px;
   width: 600px;
-}
-
-.credit {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.credit a {
-  color: rgba(255, 255, 255, 0.6);
 }
 
 @-webkit-keyframes robot_bounce {
