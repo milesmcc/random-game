@@ -231,13 +231,10 @@
 
 <style scoped>
 .robot svg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   display: block;
+  transform: scale(0.6);
   margin: 0 auto;
-  margin-left: -300px;
-  transform: scale(0.6) translate(0, -100%);
+  margin-top: -10rem;
   transform-origin: center;
   height: 800px;
   width: 600px;
