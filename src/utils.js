@@ -13,11 +13,38 @@ export function distances(numbers) {
     let last = numbers[0];
 
     for (let i = 1; i < numbers.length; i++) {
-        distances.push(Math.sqrt((numbers[i][0] - last[0]) ** 2 + (numbers[i][1] - last[1]) ** 2));
+        distances.push(Math.abs(numbers[i] - last));
         last = numbers[i];
     }
 
     return distances;
+}
+
+// const expCDF = (lambda, x) => 1 - Math.exp(-1 * lambda * x);
+
+// Discrete only
+const uniformCDF = (a, b, x) => (x - a + 1) / (b - a);
+const sampleUniform = (a, b) => (a + Math.random() * (b - a));
+
+
+function kolmogorovSmirnov(points, cdf) {
+    let supremum = 0;
+    points.sort((a, b) => a - b);
+    let dist = counts(points);
+
+    let max = points[points.length - 1];
+
+    let totalSoFar = 0.0;
+    for (let x = 0; x <= max; x++) {
+        totalSoFar += dist[x] || 0;
+        let cumulative = totalSoFar / points.length;
+        let diff = Math.abs(cumulative - cdf(x));
+        if (diff > supremum) {
+            supremum = diff;
+        }
+    }
+
+    return supremum;
 }
 
 function counts(nums) {
@@ -32,79 +59,43 @@ function counts(nums) {
     return out;
 }
 
-const expCDF = (lambda, x) => 1 - Math.exp(-1 * lambda * x);
+function factorial(n) {
+    if (n == 0) {
+        return 1;
+    }
+    let x = n;
+    for(let i = 1; i < n; i++) {
+        x *= i;
+    }
+    return x;
+}
 
-function andersonStatistic(sortedData, testCDF) {
-    let n = sortedData.length;
+export function probOfUniform(min, max, vals) {
+    let n = max - min + 1;
+    let nCounts = counts(vals);
 
-    let s = 0;
-    for (let idx = 0; idx < n; idx++) {
-        let i = idx + 1; // to match standard form
-        let y = sortedData[idx];
-        // is this lambda-specific?
-        s += ((2 * i - 1) / n) * (Math.log(testCDF(y)) + Math.log(1 - testCDF(sortedData[n - i])));
+    let x = factorial(vals.length);
+    for(let i = min; i <= max; i++) {
+        console.log(`dividing ${x} by ${nCounts[i] || 0}`)
+        x /= factorial(nCounts[i] || 0);
     }
 
-    return Math.sqrt((-1) * s - n);
+    return x * ((1 / n) ** vals.length);
 }
 
-function kolmogorovSmirnov(points, lambda) {
-    let supremum = 0;
-    points.sort((a, b) => a - b);
-    let dist = counts(points);
+export function howRandom(nums) {
+    let numDistances = distances(nums);
 
-    let max = points[points.length - 1];
+    // let ksDistances = kolmogorovSmirnov(nums, x => expCDF(0, x)); // TODO: figure out distribution
+    let ksAbsolute = kolmogorovSmirnov(nums, x => uniformCDF(0, 9, x));
 
-    let totalSoFar = 0.0;
-    for (let x = 0; x <= max; x++) {
-        totalSoFar += dist[x] || 0;
-        let cumulative = totalSoFar / points.length;
-        let diff = Math.abs(cumulative - expCDF(lambda, x));
-        if (diff > supremum) {
-            supremum = diff;
-        }
-    }
-
-    return supremum;
-}
-
-export function ksVerdict(statistic, n) {
-    // Positive values indicate different distributions at 5% significance
-    const sqrt = Math.sqrt(n);
-
-    return statistic - (1.731 / sqrt);
-}
-
-export function howRandom(points) {
-    /* The dots are precisely a poisson point process, so the distance between
-       them should follow the Exponential distribution.
-    */
-
-    let xPoints = points.map(l => l[0]).sort((a, b) => a - b);
-    let yPoints = points.map(l => l[1]).sort((a, b) => a - b);
-    let pointDistances = distances(points);
-
-    let xIntervalDist = decumulate(xPoints, 0);
-    let yIntervalDist = decumulate(yPoints, 0);
-
-    let lambda = points.length / 300;
-
-    let ksX = kolmogorovSmirnov(xIntervalDist, lambda);
-    let ksY = kolmogorovSmirnov(yIntervalDist, lambda);
-
-    let ksVerdictX = ksVerdict(ksX, points.length);
-    let ksVerdictY = ksVerdict(ksY, points.length);
-
-    let andersonX = andersonStatistic(xPoints, x => expCDF(lambda, x));
-    let andersonY = andersonStatistic(yPoints, x => expCDF(lambda, x))
+    // let andersonDistances = andersonStatistic(nums, x => expCDF(0, x)); // TODO: figure out distribution
+    // let andersonAbsolute = andersonStatistic(nums, x => uniformCDF(0, 9, x));
 
     return {
-        ksX,
-        ksY,
-        ksVerdictX,
-        ksVerdictY,
-        andersonX,
-        andersonY,
-        pointDistances
+        // ksDistances,
+        ksAbsolute,
+        // andersonDistances,
+        numDistances
     }
 }
