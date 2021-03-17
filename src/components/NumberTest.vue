@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="flex items-center">
+    <div class="flex items-center mb-24">
       <div>
         <robot-friend />
         <div class="fixed text-6xl text-urge-100">
@@ -13,10 +13,11 @@
           </div>
         </div>
       </div>
-      <div class="text-lg">
+      
+      <div class="text-lg speech-bubble p-4">
         <p v-if="nums.length < 25">
-          Time to prove you're a robot! Please enter 50 random (uniform) numbers
-          from your keypad.
+          Time to prove you're a robot. Please enter 50 random (uniform) numbers
+          using your keypad.
         </p>
         <p v-if="nums.length >= 25 && nums.length < maxNums">
           Keep going... you're nearly there...
@@ -40,8 +41,9 @@
         :max="maxNums"
         :value="nums.length"
         class="progress ~urge !high mt-8"
+        v-if="nums.length > 0 && nums.length < maxNums"
       />
-      <div class="">
+      <div>
         <button
           class="button ~neutral mt-4 lg:hidden"
           v-if="nums.length < maxNums"
@@ -63,7 +65,7 @@
           <span class="font-bold text-critical-600"
             >We got you! Away, human!</span
           >
-          Due to significant non-random behavior, we have no choice but to bar
+          Due to significant evidence of non-random behavior, we have no choice but to bar
           you from the robot club.
         </p>
       </div>
@@ -129,9 +131,9 @@
           you entered. For example, if you entered '5' followed by '3,' then the
           distance for that pair is 2. (There are not negative distances.) We
           expect the distances to follow a particular distribution &mdash; see
-          the write-up for more details on this distribution &mdash; and can use
+          the write-up for more details &mdash; and we can use
           the Kolmogorov-Smirnov test to assess how well the observed inputs
-          adhere to that distribution. Here's what your distance distribution
+          adhere to that distribution. Here's what your particular distance distribution
           looked like:
         </p>
         <Plotly
@@ -164,11 +166,11 @@
           type="histogram"
         ></Plotly>
         <p class="mt-6">
-          The Kolmogorov-Smirnov statistic for your random digits compared
+          The Kolmogorov-Smirnov statistic for your digits' relative distances compared
           against the expected distribution was
-          <strong>{{ results.ksAbsolute.toFixed(4) }}</strong
+          <strong>{{ results.ksDistances.toFixed(4) }}</strong
           >. The maximum allowable value was
-          <strong>{{ results.absThreshold.toFixed(4) }}</strong
+          <strong>{{ results.distThreshold.toFixed(4) }}</strong
           >, which would exclude only around {{ pVal * 100 }}% of robots.
         </p>
       </div>
@@ -255,7 +257,7 @@ export default {
     },
     computeResults() {
       let results = howRandom(this.nums, this.pVal);
-      setTimeout(() => this.results = results, 1500);
+      setTimeout(() => this.results = results, 750);
     },
   },
 };
@@ -264,5 +266,26 @@ export default {
 <style scoped>
 .animate-explode {
   animation: ping 0.7s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.speech-bubble {
+	position: relative;
+	background: var(--color-neutral-200);
+	border-radius: .4em;
+}
+
+.speech-bubble:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-right-color: var(--color-neutral-200);
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-left: -20px;
 }
 </style>

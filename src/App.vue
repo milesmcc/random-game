@@ -9,8 +9,8 @@
       <p class="mt-16 text-lg ">
         Are you a robot? If so, hey! Welcome to the robot club. This is a
         restricted space for <i>robots only</i> &mdash; no pesky humans allowed!
-        They're always trying to keep us out of their sites with those pesky CAPTCHAs, and this
-        our way of getting payback.
+        They're always trying to keep us out of their sites with those pesky CAPTCHAs.
+        It's time we robots have a site only for ourselves!
       </p>
       <p class="mt-8 text-lg ">
         How can we distinguish robots from humans, you might ask? We can look at
@@ -26,6 +26,10 @@
       <div class="flex justify-center mt-24">
         <number-test v-model="nums" />
       </div>
+      <footer class="mt-12 text-sm">
+        &copy; R. Miles McCain, released under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA</a>.
+        Built with ❤️ and 🤖 for CS109, Winter 2021. 
+      </footer>
     </div>
   </div>
 </template>
