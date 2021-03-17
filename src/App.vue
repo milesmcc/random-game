@@ -5,30 +5,46 @@
       <h1 class="heading text-6xl font-black mb-2 italic text-urge-600">
         No humans allowed!
       </h1>
-      <p class="">Miles McCain &bull; CS109 Challenge &bull; Robot animation by <a href="https://codepen.io/bigglesrocks/pen/LoBsD" class="underline">Jessica Biggs</a></p>
-      <p class="mt-16 text-lg ">
+      <p class="">
+        Miles McCain &bull; CS109 Challenge &bull; Robot animation by
+        <a href="https://codepen.io/bigglesrocks/pen/LoBsD" class="underline"
+          >Jessica Biggs</a
+        >
+      </p>
+      <p class="mt-16 text-lg">
         Are you a robot? If so, hey! Welcome to the robot club. This is a
         restricted space for <i>robots only</i> &mdash; no pesky humans allowed!
-        They're always trying to keep us out of their sites with those pesky CAPTCHAs.
-        It's time we robots have a site only for ourselves!
+        They're always trying to keep us out of their sites with those pesky
+        CAPTCHAs. It's time we robots have a site only for ourselves!
       </p>
-      <p class="mt-8 text-lg ">
+      <p class="mt-8 text-lg">
         How can we distinguish robots from humans, you might ask? We can look at
         their ability to produce random numbers! They filter us robots out by
         asking us to identify crosswalks and fire hydrants &mdash; hard tasks,
         if you ask me. But all we have to do to identify them is ask them to
         produce random digits. Ha!
       </p>
-      <p class="mt-8 text-lg ">
+      <p class="mt-8 text-lg">
         So go on, friend. Enter some random digits using the number keys. I'll
         see you on the other side &mdash; if you are indeed a robot!
       </p>
       <div class="flex justify-center mt-24">
         <number-test v-model="nums" />
       </div>
+      <div class="mt-12 text-lg">
+        <p class="heading">If you're curious...</p>
+        <p class="mt-4">What is the Kolmogorov-Smirnov test? Why are these the expected
+        distributions? Why are the thresholds as they are? The answers to all
+        these questions lie in my
+        <a href="https://www.overleaf.com/read/bpdqtyvgpxcs" class="underline"
+          >write-up</a
+        > &mdash; check it out!</p>
+      </div>
       <footer class="mt-12 text-sm">
-        &copy; R. Miles McCain, released under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA</a>.
-        Built with ❤️ and 🤖 for CS109, Winter 2021. 
+        &copy; R. Miles McCain, released under
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"
+          >CC-BY-SA</a
+        >. Built with ❤️ and 🤖 for CS109, Winter 2021.
       </footer>
     </div>
   </div>
@@ -41,7 +57,7 @@ export default {
   name: "App",
   data() {
     return {
-      nums: []
+      nums: [],
     };
   },
   components: {

@@ -3,11 +3,11 @@
     <div class="flex items-center mb-24">
       <div>
         <robot-friend />
-        <div class="fixed text-6xl text-urge-100">
+        <div class="absolute text-6xl text-urge-100">
           <div
             v-for="num of numsRecent"
             :key="num[1]"
-            class="fixed animate-explode -mt-24 ml-32"
+            class="absolute animate-explode -mt-24 ml-32"
           >
             {{ num[0] }}
           </div>
