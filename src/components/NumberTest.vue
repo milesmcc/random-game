@@ -97,39 +97,14 @@
           digits to be relatively uniform. Here's what your distribution looked
           like:
         </p>
-        <Plotly
-          class="mt-8"
-          :data="[
-            {
-              x: nums,
-              type: 'histogram',
-              min: 0,
-              name: 'Observed',
-              xbins: {
-                start: 0,
-                end: 9,
-                size: 1,
-              },
-            },
-            {
-              x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-              y: Array(10).fill(this.maxNums / 10),
-              name: 'Expected',
-              line: { shape: 'hv' },
-              type: 'line',
-              mode: 'lines',
-            },
-          ]"
-          :layout="plotlyLayout"
-          type="histogram"
-        ></Plotly>
+         <frequency-distribution class="mt-8" :observed="nums" :expectedX="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]" :expectedY="Array(10).fill(0.1 * nums.length)" title="Expected v. observed frequency distribution" />
         <p class="mt-6">
           The Kolmogorov-Smirnov statistic for your random digits compared
           against the expected distribution was
           <strong>{{ results.ksAbsolute.toFixed(4) }}</strong
           >. The maximum allowable value was
           <strong>{{ results.absThreshold.toFixed(4) }}</strong
-          >, which would exclude only around {{ pVal * 100 }}% of robots. The following chart illustrates how well your distribution fit the expected uniform relative to other randomly sampled uniform distributions (each with n={{maxNums}}, simulated 10,000 times).
+          >, which would exclude only around {{ pVal * 100 }}% of robots. The following chart illustrates how well your frequency distribution fit the expected uniform distribution relative to other randomly sampled uniform digits (each with n={{maxNums}}, simulated 10,000 times).
         </p>
         <k-s-test-distribution :observed="results.ksAbsolute" :threshold="results.absThreshold" :simulations="results.absKSSims" title="Distribution of K-S stats for fit to uniform (n=10,000)" />
         <h3 class="heading mt-12">Distance Distribution</h3>
@@ -143,35 +118,10 @@
           to that distribution. Here's what your particular distance
           distribution looked like:
         </p>
-        <Plotly
-          class="mt-8"
-          :data="[
-            {
-              x: results.numDistances,
-              type: 'histogram',
-              min: 0,
-              name: 'Observed',
-              xbins: {
-                start: 0,
-                end: 9,
-                size: 1,
-              },
-            },
-            {
-              x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-              y: Array.from(
+        <frequency-distribution class="mt-8" :observed="results.numDistances" :expectedX="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]" :expectedY=" Array.from(
                 { length: 10 },
                 (a, idx) => distPMF(0, 9, idx) * this.maxNums
-              ),
-              name: 'Expected',
-              type: 'line',
-              line: { shape: 'hv' },
-              mode: 'lines',
-            },
-          ]"
-          :layout="plotlyLayout"
-          type="histogram"
-        ></Plotly>
+              )" title="Expected v. observed distance distribution" />
         <p class="mt-6">
           The Kolmogorov-Smirnov statistic for your digits' relative distances
           compared against the expected distribution was
@@ -179,7 +129,7 @@
           >. The maximum allowable value was
           <strong>{{ results.distThreshold.toFixed(4) }}</strong
           >, which would exclude only around {{ pVal * 100 }}% of robots.
-          The following chart illustrates how well your distance distribution fit the expected distribution relative to other randomly sampled distance distributions (each with n={{maxNums}}, simulated 10,000 times).
+          The following chart illustrates how well your distance distribution fit the expected distribution relative to other randomly sampled distance values (each with n={{maxNums}}, simulated 10,000 times).
         </p>
         <k-s-test-distribution :observed="results.ksDistances" :threshold="results.distThreshold" :simulations="results.distKSSims" title="Distribution of K-S stats for fit to expected distance distribution (n=10,000)" />
       </div>
@@ -192,9 +142,9 @@
 
 <script>
 import { howRandom, distPMF, plotlyLayout } from "../utils.js";
-import { Plotly } from "vue-plotly";
 import RobotFriend from "./RobotFriend.vue";
 import KSTestDistribution from "./KSTestDistribution.vue";
+import FrequencyDistribution from "./FrequencyDistribution.vue";
 
 export default {
   name: "NumberInput",
@@ -220,9 +170,9 @@ export default {
     document.addEventListener("keydown", this.enterValue);
   },
   components: {
-    Plotly,
     RobotFriend,
-    KSTestDistribution
+    KSTestDistribution,
+    FrequencyDistribution
   },
   methods: {
     enterNum(n) {
