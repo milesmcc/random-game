@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="text-lg speech-bubble p-4">
         <p v-if="nums.length < 25">
           Time to prove you're a robot. Please enter 50 random (uniform) numbers
@@ -28,10 +28,16 @@
         >
           Hmm... I'm thinking...
         </p>
-        <p v-if="results.isHuman === true" class="text-critical-600 font-bold text-2xl">
+        <p
+          v-if="results.isHuman === true"
+          class="text-critical-600 font-bold text-2xl"
+        >
           Get out of here, human!
         </p>
-        <p v-if="results.isHuman === false" class="text-urge-600 font-bold text-2xl">
+        <p
+          v-if="results.isHuman === false"
+          class="text-urge-600 font-bold text-2xl"
+        >
           Bleep bloop, fellow robot!
         </p>
       </div>
@@ -65,8 +71,8 @@
           <span class="font-bold text-critical-600"
             >We got you! Away, human!</span
           >
-          Due to significant evidence of non-random behavior, we have no choice but to bar
-          you from the robot club.
+          Due to significant evidence of non-random behavior, we have no choice
+          but to bar you from the robot club.
         </p>
       </div>
       <div v-if="results.isHuman === false">
@@ -125,16 +131,85 @@
           <strong>{{ results.absThreshold.toFixed(4) }}</strong
           >, which would exclude only around {{ pVal * 100 }}% of robots.
         </p>
+        <Plotly
+          class="mt-8"
+          :data="[
+            {
+              x: results.absKSSims,
+              type: 'histogram',
+              min: 0,
+              name: 'Simulated',
+              xbins: {
+                size: 0.02,
+                start: 0,
+              },
+            },
+          ]"
+          :layout="{
+            title: {text: 'Raw Frequencies K-S Distribution', color: 'white'},
+            shapes: [
+              {
+                type: 'line',
+                x0: results.ksAbsolute,
+                y0: 0,
+                x1: results.ksAbsolute,
+                yref: 'paper',
+                y1: 1,
+                line: {
+                  color: 'orange',
+                  width: 2,
+                },
+              },
+              {
+                type: 'line',
+                x0: results.absThreshold,
+                y0: 0,
+                x1: results.absThreshold,
+                yref: 'paper',
+                y1: 1,
+                line: {
+                  color: 'lightgreen',
+                  width: 2,
+                  dash: 'dot',
+                },
+              },
+            ],
+            annotations: [
+            {
+                showarrow: false,
+                text: 'Observed',
+                align: 'right',
+                x: results.ksAbsolute,
+                xanchor: 'right',
+                y: 1,
+                yanchor: 'top',
+                font: {color: 'orange'}
+            },
+            {
+                showarrow: false,
+                text: 'Maximum',
+                align: 'right',
+                x: results.absThreshold,
+                xanchor: 'right',
+                y: 1,
+                yanchor: 'top',
+                font: {color: 'lightgreen'}
+            }
+            ],
+            ...plotlyLayout,
+          }"
+          type="histogram"
+        ></Plotly>
         <h3 class="heading mt-12">Distance Distribution</h3>
         <p class="mt-4">
           The "distance distribution" captures the distance between each digit
           you entered. For example, if you entered '5' followed by '3,' then the
           distance for that pair is 2. (There are not negative distances.) We
           expect the distances to follow a particular distribution &mdash; see
-          the write-up for more details &mdash; and we can use
-          the Kolmogorov-Smirnov test to assess how well the observed inputs
-          adhere to that distribution. Here's what your particular distance distribution
-          looked like:
+          the write-up for more details &mdash; and we can use the
+          Kolmogorov-Smirnov test to assess how well the observed inputs adhere
+          to that distribution. Here's what your particular distance
+          distribution looked like:
         </p>
         <Plotly
           class="mt-8"
@@ -166,8 +241,8 @@
           type="histogram"
         ></Plotly>
         <p class="mt-6">
-          The Kolmogorov-Smirnov statistic for your digits' relative distances compared
-          against the expected distribution was
+          The Kolmogorov-Smirnov statistic for your digits' relative distances
+          compared against the expected distribution was
           <strong>{{ results.ksDistances.toFixed(4) }}</strong
           >. The maximum allowable value was
           <strong>{{ results.distThreshold.toFixed(4) }}</strong
@@ -207,7 +282,9 @@ export default {
         yaxis: { color: "white" },
         xaxis: { color: "white" },
         legend: { font: { color: "white" } },
+        title: { font: {color: "white"}}
       },
+      showlegend: true,
       distPMF,
     };
   },
@@ -257,7 +334,7 @@ export default {
     },
     computeResults() {
       let results = howRandom(this.nums, this.pVal);
-      setTimeout(() => this.results = results, 750);
+      setTimeout(() => (this.results = results), 750);
     },
   },
 };
@@ -269,23 +346,23 @@ export default {
 }
 
 .speech-bubble {
-	position: relative;
-	background: var(--color-neutral-200);
-	border-radius: .4em;
+  position: relative;
+  background: var(--color-neutral-200);
+  border-radius: 0.4em;
 }
 
 .speech-bubble:after {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-right-color: var(--color-neutral-200);
-	border-left: 0;
-	border-bottom: 0;
-	margin-top: -10px;
-	margin-left: -20px;
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  border-right-color: var(--color-neutral-200);
+  border-left: 0;
+  border-bottom: 0;
+  margin-top: -10px;
+  margin-left: -20px;
 }
 </style>
