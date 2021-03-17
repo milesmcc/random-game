@@ -107,7 +107,7 @@ export default {
     props: {
         threshold: Number,
         observed: Number,
-        simulations: Number,
+        simulations: Array,
         title: String
     }
 

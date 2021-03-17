@@ -2,7 +2,7 @@
   <div class="bg-neutral-100 min-h-screen min-w-screen">
     <div class="mx-4 pt-8 lg:pt-24 py-8 md:mx-auto md:max-w-screen-md">
       <p class="text-neutral-600 text-xl">The Robot Club</p>
-      <h1 class="heading text-6xl font-black mb-2 italic text-urge-600">
+      <h1 class="heading text-5xl md:text-6xl font-black mb-2 italic text-urge-600">
         No humans allowed!
       </h1>
       <p class="">

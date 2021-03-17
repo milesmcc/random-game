@@ -1,8 +1,8 @@
 <template>
   <div class="w-full">
-    <div class="flex items-center mb-24">
+    <div class="md:flex items-center mb-24">
       <div>
-        <robot-friend />
+        <robot-friend class="mb-16 md:mb-0" />
         <div class="absolute text-6xl text-urge-100">
           <div
             v-for="num of numsRecent"
@@ -230,7 +230,8 @@ export default {
   border-radius: 0.4em;
 }
 
-.speech-bubble:after {
+@media screen and (min-width: 768px) {
+  .speech-bubble:after {
   content: "";
   position: absolute;
   left: 0;
@@ -244,4 +245,6 @@ export default {
   margin-top: -10px;
   margin-left: -20px;
 }
+}
+
 </style>
