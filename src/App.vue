@@ -1,17 +1,32 @@
 <template>
   <div class="bg-neutral-100 min-h-screen min-w-screen">
-    <div class="mx-4 pt-8 lg:pt-24 md:mx-auto md:max-w-screen-lg">
-      <h1 class="heading text-6xl font-black text-center italic text-urge-600">
+    <div class="mx-4 pt-8 lg:pt-24 md:mx-auto md:max-w-screen-md">
+      <p class="text-neutral-600 text-xl">The Robot Club</p>
+      <h1 class="heading text-6xl font-black mb-2 italic text-urge-600">
         No humans allowed!
       </h1>
-      <p class="text-center">
-        Miles McCain &bull; CS109 Challenge
+      <p class="">Miles McCain &bull; CS109 Challenge &bull; Robot animation by <a href="https://codepen.io/bigglesrocks/pen/LoBsD" class="underline">Jessica Biggs</a></p>
+      <p class="mt-16 text-lg ">
+        Are you a robot? If so, hey! Welcome to the robot club. This is a
+        restricted space for <i>robots only</i> &mdash; no pesky humans allowed!
+        They're always trying to keep us out with those pesky CAPTCHAs, and this
+        our way of getting payback.
+      </p>
+      <p class="mt-8 text-lg ">
+        How can we distinguish robots from humans, you might ask? We can look at
+        their ability to produce random numbers! They filter us robots out by
+        asking us to identify crosswalks and fire hydrants &mdash; hard tasks,
+        if you ask me! But all we have to do to identify them is ask them to
+        produce random digits. Ha!
+      </p>
+      <p class="mt-8 text-lg ">
+        So go on, friend. Enter some random digits using the number keys. I'll
+        see you on the other side &mdash; if you are indeed a robot!
       </p>
       <robot-friend />
       <div class="flex justify-center">
-      <number-input v-model="nums" :maxNums="50" />
+        <number-test v-model="nums" :maxNums="50" />
       </div>
-      <button @click="computeDistribution">Compute Distributions</button>
       <Plotly
         :data="[
           {
@@ -20,12 +35,7 @@
             min: 0,
           },
         ]"
-        :layout="{
-          plot_bgcolor: '#0b0f18',
-          paper_bgcolor: '#0b0f18',
-          yaxis: { color: 'white' },
-          xaxis: { color: 'white' },
-        }"
+        :layout="plotlyLayout"
         type="histogram"
       ></Plotly>
     </div>
@@ -33,9 +43,9 @@
 </template>
 
 <script>
-import NumberInput from "./components/NumberInput.vue";
-import { howRandom, distances } from "./utils.js";
-import { Plotly } from "vue-plotly";
+import NumberTest from "./components/NumberTest.vue";
+// import { howRandom } from "./utils.js";
+// import { Plotly } from "vue-plotly";
 import RobotFriend from "./components/RobotFriend.vue";
 
 export default {
@@ -43,22 +53,21 @@ export default {
   data() {
     return {
       nums: [],
+      plotlyLayout: {
+        plot_bgcolor: "#0b0f18",
+        paper_bgcolor: "#0b0f18",
+        yaxis: { color: "white" },
+        xaxis: { color: "white" },
+      },
     };
   },
-  methods: {
-    computeDistribution() {
-      let results = howRandom(this.nums, 0.2);
-      console.log(results);
-    },
-  },
   components: {
-    NumberInput,
-    Plotly,
+    NumberTest,
     RobotFriend,
   },
   computed: {
     dotDistances() {
-      return distances(this.nums);
+      return [];
     },
   },
 };

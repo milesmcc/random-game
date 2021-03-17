@@ -235,6 +235,7 @@
   transform: scale(0.6);
   margin: 0 auto;
   margin-top: -10rem;
+  margin-bottom: -8rem;
   transform-origin: center;
   height: 800px;
   width: 600px;
