@@ -1,6 +1,6 @@
 <template>
   <div class="bg-neutral-100 min-h-screen min-w-screen">
-    <div class="mx-4 pt-8 lg:pt-24 md:mx-auto md:max-w-screen-md">
+    <div class="mx-4 pt-8 lg:pt-24 py-8 md:mx-auto md:max-w-screen-md">
       <p class="text-neutral-600 text-xl">The Robot Club</p>
       <h1 class="heading text-6xl font-black mb-2 italic text-urge-600">
         No humans allowed!
@@ -9,7 +9,7 @@
       <p class="mt-16 text-lg ">
         Are you a robot? If so, hey! Welcome to the robot club. This is a
         restricted space for <i>robots only</i> &mdash; no pesky humans allowed!
-        They're always trying to keep us out with those pesky CAPTCHAs, and this
+        They're always trying to keep us out of their sites with those pesky CAPTCHAs, and this
         our way of getting payback.
       </p>
       <p class="mt-8 text-lg ">
@@ -23,47 +23,25 @@
         So go on, friend. Enter some random digits using the number keys. I'll
         see you on the other side &mdash; if you are indeed a robot!
       </p>
-      <robot-friend />
-      <div class="flex justify-center">
-        <number-test v-model="nums" :maxNums="50" />
+      <div class="flex justify-center mt-24">
+        <number-test v-model="nums" />
       </div>
-      <Plotly
-        :data="[
-          {
-            x: dotDistances,
-            type: 'histogram',
-            min: 0,
-          },
-        ]"
-        :layout="plotlyLayout"
-        type="histogram"
-      ></Plotly>
     </div>
   </div>
 </template>
 
 <script>
 import NumberTest from "./components/NumberTest.vue";
-// import { howRandom } from "./utils.js";
-// import { Plotly } from "vue-plotly";
-import RobotFriend from "./components/RobotFriend.vue";
 
 export default {
   name: "App",
   data() {
     return {
-      nums: [],
-      plotlyLayout: {
-        plot_bgcolor: "#0b0f18",
-        paper_bgcolor: "#0b0f18",
-        yaxis: { color: "white" },
-        xaxis: { color: "white" },
-      },
+      nums: []
     };
   },
   components: {
     NumberTest,
-    RobotFriend,
   },
   computed: {
     dotDistances() {

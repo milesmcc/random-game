@@ -1,48 +1,189 @@
 <template>
-  <div class="max-w-screen-sm w-full">
-    <p class="italic text-center text-xl">
-      Time to prove you're a robot!<br />
-      Please enter 50 random numbers from your keypad.
-    </p>
-    <div class="flex items-center justify-center mt-12">
-      <transition name="fade">
-        <div
-          class="flex items-center justify-around w-32 h-32 bg-neutral-200 rounded text-6xl text-urge-600"
-        >
-          <p v-if="nums.length === 0" class="animate-pulse">#</p>
-          <p v-if="nums.length > 0" class="animate-pulse">
-            {{ nums[nums.length - 1] }}
-          </p>
+  <div class="w-full">
+    <div class="flex items-center">
+      <div>
+        <robot-friend />
+        <div class="fixed text-6xl text-urge-100">
+          <div
+            v-for="num of numsRecent"
+            :key="num[1]"
+            class="fixed animate-explode -mt-24 ml-32"
+          >
+            {{ num[0] }}
+          </div>
         </div>
-      </transition>
+      </div>
+      <div class="text-lg">
+        <p v-if="nums.length < 25">
+          Time to prove you're a robot! Please enter 50 random (uniform) numbers
+          from your keypad.
+        </p>
+        <p v-if="nums.length >= 25 && nums.length < maxNums">
+          Keep going... you're nearly there...
+        </p>
+        <p
+          v-if="nums.length >= maxNums && results.isHuman === undefined"
+          class="animate-pulse"
+        >
+          Hmm... I'm thinking...
+        </p>
+        <p v-if="results.isHuman === true" class="text-critical-600 font-bold text-2xl">
+          Get out of here, human!
+        </p>
+        <p v-if="results.isHuman === false" class="text-urge-600 font-bold text-2xl">
+          Bleep bloop, fellow robot!
+        </p>
+      </div>
     </div>
-    <progress
-      :max="maxNums"
-      :value="nums.length"
-      class="progress ~urge !high mt-8"
-    />
-    <div class="text-center">
-      <button
-        v-if="nums.length >= maxNums"
-        class="button ~critical !low mb-2 block"
-        @click="clear"
-      >
-        Reset
-      </button>
-      <button class="button ~neutral mt-4" @click="$refs.input.focus()">
-        On a phone? Open keypad
-      </button>
-      <input
-        type="tel"
-        class="opacity-0 block"
-        ref="input"
-        @input="manualInput"
+    <div v-if="nums.length < maxNums">
+      <progress
+        :max="maxNums"
+        :value="nums.length"
+        class="progress ~urge !high mt-8"
       />
+      <div class="">
+        <button
+          class="button ~neutral mt-4 lg:hidden"
+          v-if="nums.length < maxNums"
+          @click="$refs.input.focus()"
+        >
+          On a phone? Open keypad
+        </button>
+        <input
+          type="tel"
+          class="opacity-0 block"
+          ref="input"
+          @input="manualInput"
+        />
+      </div>
+    </div>
+    <div v-if="results.isHuman !== undefined" class="text-lg mt-12">
+      <div v-if="results.isHuman === true">
+        <p>
+          <span class="font-bold text-critical-600"
+            >We got you! Away, human!</span
+          >
+          Due to significant non-random behavior, we have no choice but to bar
+          you from the robot club.
+        </p>
+      </div>
+      <div v-if="results.isHuman === false">
+        <p>
+          <span class="font-bold text-positive-600"
+            >Hello, my robot friend!</span
+          >
+          Welcome to the club. Bleep bloop.
+        </p>
+        <p class="mt-4">
+          Well done generating random numbers! And if you're a human &mdash;
+          after all, our test is not infallible &mdash; your entropy skills are
+          quite impressive.
+        </p>
+      </div>
+      <div class="mt-4">
+        <p>In case you were curious, here's a breakdown of your scores...</p>
+        <h3 class="heading mt-12">Raw Distribution</h3>
+        <p class="mt-4">
+          The "raw distribution" captures the number of times you entered each
+          particular digit in total. In general, we expect the distribution of
+          digits to be relatively uniform. Here's what your distribution looked
+          like:
+        </p>
+        <Plotly
+          class="mt-8"
+          :data="[
+            {
+              x: nums,
+              type: 'histogram',
+              min: 0,
+              name: 'Observed',
+              xbins: {
+                start: 0,
+                end: 9,
+                size: 1,
+              },
+            },
+            {
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+              y: Array(10).fill(this.maxNums / 10),
+              name: 'Expected',
+              line: { shape: 'hv' },
+              type: 'line',
+              mode: 'lines',
+            },
+          ]"
+          :layout="plotlyLayout"
+          type="histogram"
+        ></Plotly>
+        <p class="mt-6">
+          The Kolmogorov-Smirnov statistic for your random digits compared
+          against the expected distribution was
+          <strong>{{ results.ksAbsolute.toFixed(4) }}</strong
+          >. The maximum allowable value was
+          <strong>{{ results.absThreshold.toFixed(4) }}</strong
+          >, which would exclude only around {{ pVal * 100 }}% of robots.
+        </p>
+        <h3 class="heading mt-12">Distance Distribution</h3>
+        <p class="mt-4">
+          The "distance distribution" captures the distance between each digit
+          you entered. For example, if you entered '5' followed by '3,' then the
+          distance for that pair is 2. (There are not negative distances.) We
+          expect the distances to follow a particular distribution &mdash; see
+          the write-up for more details on this distribution &mdash; and can use
+          the Kolmogorov-Smirnov test to assess how well the observed inputs
+          adhere to that distribution. Here's what your distance distribution
+          looked like:
+        </p>
+        <Plotly
+          class="mt-8"
+          :data="[
+            {
+              x: results.numDistances,
+              type: 'histogram',
+              min: 0,
+              name: 'Observed',
+              xbins: {
+                start: 0,
+                end: 9,
+                size: 1,
+              },
+            },
+            {
+              x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+              y: Array.from(
+                { length: 10 },
+                (a, idx) => distPMF(0, 9, idx) * this.maxNums
+              ),
+              name: 'Expected',
+              type: 'line',
+              line: { shape: 'hv' },
+              mode: 'lines',
+            },
+          ]"
+          :layout="plotlyLayout"
+          type="histogram"
+        ></Plotly>
+        <p class="mt-6">
+          The Kolmogorov-Smirnov statistic for your random digits compared
+          against the expected distribution was
+          <strong>{{ results.ksAbsolute.toFixed(4) }}</strong
+          >. The maximum allowable value was
+          <strong>{{ results.absThreshold.toFixed(4) }}</strong
+          >, which would exclude only around {{ pVal * 100 }}% of robots.
+        </p>
+      </div>
+      <button class="button ~urge !high mt-4" @click="clear()">
+        Try Again
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { howRandom, distPMF } from "../utils.js";
+import { Plotly } from "vue-plotly";
+import RobotFriend from "./RobotFriend.vue";
+
 export default {
   name: "NumberInput",
   props: {
@@ -50,27 +191,52 @@ export default {
       type: Array,
       default: () => [],
     },
-    maxNums: Number,
   },
   data() {
     return {
       nums: this.value,
+      maxNums: 50,
+      results: {},
+      pVal: 0.2,
+      numsRecent: [],
+      plotlyLayout: {
+        plot_bgcolor: "#0b0f18",
+        paper_bgcolor: "#0b0f18",
+        yaxis: { color: "white" },
+        xaxis: { color: "white" },
+        legend: { font: { color: "white" } },
+      },
+      distPMF,
     };
   },
   mounted() {
-    console.log(this.maxNums);
     document.addEventListener("keydown", this.enterValue);
+  },
+  components: {
+    Plotly,
+    RobotFriend,
   },
   methods: {
     enterNum(n) {
       this.nums.push(n);
       this.$emit("input", this.nums);
+
+      if (this.nums.length >= this.maxNums) {
+        this.computeResults();
+      }
+
+      this.numsRecent.push([n, Math.random()]);
+      setTimeout(() => this.numsRecent.shift(), 500);
     },
     clear() {
       this.nums = [];
       this.$emit("input", this.nums);
+      this.results = {};
     },
     enterValue(e) {
+      if (this.nums.length >= this.maxNums) {
+        return;
+      }
       let val = e.key;
       if (
         ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].indexOf(val) !== -1
@@ -86,6 +252,10 @@ export default {
     },
     manualInput(e) {
       console.log(e);
+    },
+    computeResults() {
+      let results = howRandom(this.nums, this.pVal);
+      setTimeout(() => this.results = results, 1500);
     },
   },
 };

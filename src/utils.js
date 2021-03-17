@@ -23,7 +23,7 @@ export function distances(numbers) {
 }
 
 // Discrete only
-const uniformCMF = (a, b, x) => (x - a + 1) / (b - a);
+const uniformCMF = (a, b, x) => (x - a + 1) / (b - a + 1);
 const sampleUniform = (a, b) => (a + Math.floor(Math.random() * (b - a)));
 const sampleDist = (a, b) => Math.abs(sampleUniform(a, b) - sampleUniform(a, b));
 
@@ -43,7 +43,7 @@ const diffPMF = (a, b, x) => {
     return sum;
 }
 
-const distPMF = (a, b, x) => {
+export const distPMF = (a, b, x) => {
     if (x < 0 || x > b) {
         return 0;
     }
@@ -66,33 +66,32 @@ const distCMF = (a, b, x) => {
  * Calculate the K-S statistic value that, if used as a threshold for
  * determining fit, would only exlude true fits with probability `pVal`.
  */
-function ksStatTheshold(pVal, n, sampleFunc, cmf) {
+function ksStatTheshold(pVal, n, sampleFunc, cmf, min, max) {
     const N_TRIALS = 10000;
 
     // Run many simulations
     let results = [];
     for(let i = 0; i < N_TRIALS; i++) {
         let sample = Array.from({length: n}, sampleFunc);
-        let ksStat = kolmogorovSmirnov(sample, cmf);
+        let ksStat = kolmogorovSmirnov(sample, min, max, cmf);
         results.push(ksStat);
     }
 
     // Find the K-S test value that would only exclude `pVal` of results. 
     results.sort((a, b) => a - b);
+
     return results[Math.floor((1 - pVal) * results.length)];
 }
 
-function kolmogorovSmirnov(points, cmf) {
+function kolmogorovSmirnov(points, min, max, cmf) {
     let supremum = 0;
-    points.sort((a, b) => a - b);
-    let dist = counts(points);
-
-    let max = points[points.length - 1];
+    let sorted = points.filter(x => true).sort((a, b) => a - b);
+    let dist = counts(sorted);
 
     let totalSoFar = 0.0;
-    for (let x = 0; x <= max; x++) {
+    for (let x = min; x <= max; x++) {
         totalSoFar += dist[x] || 0;
-        let cumulative = totalSoFar / points.length;
+        let cumulative = totalSoFar / sorted.length;
         let diff = Math.abs(cumulative - cmf(x));
         if (diff > supremum) {
             supremum = diff;
@@ -131,7 +130,6 @@ export function probOfUniform(min, max, vals) {
 
     let x = factorial(vals.length);
     for(let i = min; i <= max; i++) {
-        console.log(`dividing ${x} by ${nCounts[i] || 0}`)
         x /= factorial(nCounts[i] || 0);
     }
 
@@ -139,13 +137,16 @@ export function probOfUniform(min, max, vals) {
 }
 
 export function howRandom(nums, pVal) {
-    let absThreshold = ksStatTheshold(pVal, nums.length, () => sampleUniform(0, 9), x => uniformCMF(0, 9, x));
-    let distThreshold = ksStatTheshold(pVal, nums.length, () => sampleDist(0, 9), x => distCMF(0, 9, x));
-
     let numDistances = distances(nums);
 
-    let ksAbsolute = kolmogorovSmirnov(nums, x => uniformCMF(0, 9, x));
-    let ksDistances = kolmogorovSmirnov(numDistances, x => distCMF(0, 9, x));
+    let absThreshold = ksStatTheshold(pVal, nums.length, () => sampleUniform(0, 9), x => uniformCMF(0, 9, x), 0, 9);
+    let distThreshold = ksStatTheshold(pVal, numDistances.length, () => sampleDist(0, 9), x => distCMF(0, 9, x), 0, 9);
+
+    let ksAbsolute = kolmogorovSmirnov(nums, 0, 9, x => uniformCMF(0, 9, x));
+    let ksDistances = kolmogorovSmirnov(numDistances, 0, 9, x => distCMF(0, 9, x));
+
+    let ksAbsoluteVerdict = ksAbsolute <= absThreshold;
+    let ksDistanceVerdict = ksDistances <= distThreshold;
 
     return {
         absThreshold,
@@ -153,8 +154,9 @@ export function howRandom(nums, pVal) {
         numDistances,
         ksAbsolute,
         ksDistances,
-        ksAbsoluteVerdict: ksAbsolute <= absThreshold,
-        ksDistanceVerdict: ksDistances <= distThreshold
+        ksAbsoluteVerdict,
+        ksDistanceVerdict,
+        isHuman: !ksAbsoluteVerdict || !ksDistanceVerdict
     }
 }
 

@@ -2,7 +2,7 @@
   <!-- from https://codepen.io/bigglesrocks/pen/LoBsD -->
   <div>
     <div class="robot">
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
         <g id="hover">
           <ellipse
             id="shadow_2_"
@@ -237,8 +237,8 @@
   margin-top: -10rem;
   margin-bottom: -8rem;
   transform-origin: center;
-  height: 800px;
-  width: 600px;
+  height: 400px;
+  width: 300px;
 }
 
 @-webkit-keyframes robot_bounce {
