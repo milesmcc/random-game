@@ -16,7 +16,7 @@
         How can we distinguish robots from humans, you might ask? We can look at
         their ability to produce random numbers! They filter us robots out by
         asking us to identify crosswalks and fire hydrants &mdash; hard tasks,
-        if you ask me! But all we have to do to identify them is ask them to
+        if you ask me. But all we have to do to identify them is ask them to
         produce random digits. Ha!
       </p>
       <p class="mt-8 text-lg ">
