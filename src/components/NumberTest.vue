@@ -129,77 +129,9 @@
           <strong>{{ results.ksAbsolute.toFixed(4) }}</strong
           >. The maximum allowable value was
           <strong>{{ results.absThreshold.toFixed(4) }}</strong
-          >, which would exclude only around {{ pVal * 100 }}% of robots.
+          >, which would exclude only around {{ pVal * 100 }}% of robots. The following chart illustrates how well your distribution fit the expected uniform relative to other randomly sampled uniform distributions (each with n={{maxNums}}, simulated 10,000 times).
         </p>
-        <Plotly
-          class="mt-8"
-          :data="[
-            {
-              x: results.absKSSims,
-              type: 'histogram',
-              min: 0,
-              name: 'Simulated',
-              xbins: {
-                size: 0.02,
-                start: 0,
-              },
-            },
-          ]"
-          :layout="{
-            title: {text: 'Raw Frequencies K-S Distribution', color: 'white'},
-            shapes: [
-              {
-                type: 'line',
-                x0: results.ksAbsolute,
-                y0: 0,
-                x1: results.ksAbsolute,
-                yref: 'paper',
-                y1: 1,
-                line: {
-                  color: 'orange',
-                  width: 2,
-                },
-              },
-              {
-                type: 'line',
-                x0: results.absThreshold,
-                y0: 0,
-                x1: results.absThreshold,
-                yref: 'paper',
-                y1: 1,
-                line: {
-                  color: 'lightgreen',
-                  width: 2,
-                  dash: 'dot',
-                },
-              },
-            ],
-            annotations: [
-            {
-                showarrow: false,
-                text: 'Observed',
-                align: 'right',
-                x: results.ksAbsolute,
-                xanchor: 'right',
-                y: 1,
-                yanchor: 'top',
-                font: {color: 'orange'}
-            },
-            {
-                showarrow: false,
-                text: 'Maximum',
-                align: 'right',
-                x: results.absThreshold,
-                xanchor: 'right',
-                y: 1,
-                yanchor: 'top',
-                font: {color: 'lightgreen'}
-            }
-            ],
-            ...plotlyLayout,
-          }"
-          type="histogram"
-        ></Plotly>
+        <k-s-test-distribution :observed="results.ksAbsolute" :threshold="results.absThreshold" :simulations="results.absKSSims" title="Distribution of K-S stats for fit to uniform (n=10,000)" />
         <h3 class="heading mt-12">Distance Distribution</h3>
         <p class="mt-4">
           The "distance distribution" captures the distance between each digit
@@ -247,7 +179,9 @@
           >. The maximum allowable value was
           <strong>{{ results.distThreshold.toFixed(4) }}</strong
           >, which would exclude only around {{ pVal * 100 }}% of robots.
+          The following chart illustrates how well your distance distribution fit the expected distribution relative to other randomly sampled distance distributions (each with n={{maxNums}}, simulated 10,000 times).
         </p>
+        <k-s-test-distribution :observed="results.ksDistances" :threshold="results.distThreshold" :simulations="results.distKSSims" title="Distribution of K-S stats for fit to expected distance distribution (n=10,000)" />
       </div>
       <button class="button ~urge !high mt-4" @click="clear()">
         Try Again
@@ -257,9 +191,10 @@
 </template>
 
 <script>
-import { howRandom, distPMF } from "../utils.js";
+import { howRandom, distPMF, plotlyLayout } from "../utils.js";
 import { Plotly } from "vue-plotly";
 import RobotFriend from "./RobotFriend.vue";
+import KSTestDistribution from "./KSTestDistribution.vue";
 
 export default {
   name: "NumberInput",
@@ -276,16 +211,9 @@ export default {
       results: {},
       pVal: 0.2,
       numsRecent: [],
-      plotlyLayout: {
-        plot_bgcolor: "#0b0f18",
-        paper_bgcolor: "#0b0f18",
-        yaxis: { color: "white" },
-        xaxis: { color: "white" },
-        legend: { font: { color: "white" } },
-        title: { font: {color: "white"}}
-      },
       showlegend: true,
       distPMF,
+      plotlyLayout
     };
   },
   mounted() {
@@ -294,6 +222,7 @@ export default {
   components: {
     Plotly,
     RobotFriend,
+    KSTestDistribution
   },
   methods: {
     enterNum(n) {

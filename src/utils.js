@@ -37,7 +37,7 @@ const uniformPMF = (a, b, x) => {
 
 const diffPMF = (a, b, x) => {
     let sum = 0;
-    for(let n = a; n <= b; n++) {
+    for (let n = a; n <= b; n++) {
         sum += uniformPMF(a, b, n) * uniformPMF(a, b, n - x);
     }
     return sum;
@@ -47,7 +47,7 @@ export const distPMF = (a, b, x) => {
     if (x < 0 || x > b) {
         return 0;
     }
-    if(x === 0) {
+    if (x === 0) {
         return diffPMF(a, b, 0);
     }
     return diffPMF(a, b, x) + diffPMF(a, b, -1 * x);
@@ -55,7 +55,7 @@ export const distPMF = (a, b, x) => {
 
 const distCMF = (a, b, x) => {
     let sum = 0;
-    for(let n = a; n <= x; n++) {
+    for (let n = a; n <= x; n++) {
         sum += distPMF(a, b, n);
     }
     return sum;
@@ -71,8 +71,8 @@ function ksStatTheshold(pVal, n, sampleFunc, cmf, min, max) {
 
     // Run many simulations
     let results = [];
-    for(let i = 0; i < N_TRIALS; i++) {
-        let sample = Array.from({length: n}, sampleFunc);
+    for (let i = 0; i < N_TRIALS; i++) {
+        let sample = Array.from({ length: n }, sampleFunc);
         let ksStat = kolmogorovSmirnov(sample, min, max, cmf);
         results.push(ksStat);
     }
@@ -118,7 +118,7 @@ function factorial(n) {
         return 1;
     }
     let x = n;
-    for(let i = 1; i < n; i++) {
+    for (let i = 1; i < n; i++) {
         x *= i;
     }
     return x;
@@ -129,7 +129,7 @@ export function probOfUniform(min, max, vals) {
     let nCounts = counts(vals);
 
     let x = factorial(vals.length);
-    for(let i = min; i <= max; i++) {
+    for (let i = min; i <= max; i++) {
         x /= factorial(nCounts[i] || 0);
     }
 
@@ -162,4 +162,12 @@ export function howRandom(nums, pVal) {
     }
 }
 
+export const plotlyLayout = {
+    plot_bgcolor: "#0b0f18",
+    paper_bgcolor: "#0b0f18",
+    yaxis: { color: "white" },
+    xaxis: { color: "white" },
+    legend: { font: { color: "white" } },
+    title: { font: { color: "white" } }
+};
 /* eslint-enable no-unused-vars */
