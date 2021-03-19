@@ -5,13 +5,16 @@
       <h1 class="heading text-5xl md:text-6xl font-black mb-2 italic text-urge-600">
         No humans allowed!
       </h1>
-      <p class="">
+      <p class="mb-16">
         Miles McCain &bull; CS109 Challenge &bull; Robot animation by
         <a href="https://codepen.io/bigglesrocks/pen/LoBsD" class="underline"
           >Jessica Biggs</a
         >
       </p>
-      <p class="mt-16 text-lg">
+      <div class="aside ~critical mt-8 md:hidden">
+        <p><strong>I recommend visiting on a device with a physical keyboard.</strong> It looks like you're visiting the site from a mobile device. You may have issues with the charts and with entering numbers; I strongly recommend visiting from a laptop or desktop computer instead!</p>
+      </div>
+      <p class="mt-8 text-lg">
         Are you a robot? If so, hey! Welcome to the robot club. This is a
         restricted space for <i>robots only</i> &mdash; no pesky humans allowed!
         They're always trying to keep us out of their sites with those pesky
