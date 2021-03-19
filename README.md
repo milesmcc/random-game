@@ -1,11 +1,6 @@
-# random-game
+# Random Game (The Robot Club)
 
-points to make:
-
-* irony in that to determine randomness, we look for predictability
-* originally tried to do Kolmogorov-Smirnov, but wasn't great. Tails are what matter here.
-* 
-
+Hi! This is the source code for the Robot Club game. Check it out at <https://robots.rmrm.io>. You can also read the written report [here](https://www.overleaf.com/read/bpdqtyvgpxcs) or watch a video demo on [YouTube](TODO).
 
 ## Project setup
 ```
@@ -26,6 +21,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
